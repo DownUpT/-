@@ -54,4 +54,12 @@ EventLoop本质是一个单线程执行器，里面的run方法处理Channel上�
 
 EventLoopGroup是一组EventLoop
 
+### 2.3 Channel
+
+### 2.4 Future & Promise
+
+### 2.5 Handler & Pipeline
+
+### 2.6 ByteBuf
+
 
