@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Reg {
+public class Reg implements Runnable{
 
     private static final List<String> REPLACE_STR = new ArrayList<>();
 
@@ -20,5 +20,14 @@ public class Reg {
         for (String s : REPLACE_STR) {
             System.out.println("s :[" + s + "]");
         }
+
+        Thread thread = new Thread(new Reg());
     }
+
+    @Override
+    public void run() {
+
+    }
+
+
 }
