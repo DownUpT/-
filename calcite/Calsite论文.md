@@ -41,7 +41,7 @@ Orca is一个模块化的查询优化器，在Greenplum和HAWQ之类的数据管
 
 ## 3 ARCHITECTURE
 Calcite包含了许多典型的数据库管理系统模块，但是删除了一些关键的模块，比如：数据存储、数据处理的算法、存储元数据的仓库。删除这些模块的原因是：Calcite要扮演的角色是一个中介，用来连接各种数据存储以及各种数据处理引擎的中介，本身并不存储和持有数据。它也是构建定制数据处理系统的坚实基础（跨源跨库功能）。
-![](../../img/calcite/calcite架构.png)
+![](../img/calcite/calcite架构.png)
 Figure 1 中主要描述了Calcite架构的主要成员。Calcite的优化器内部采用了关系运算符树（a tree of relational operators）。优化器引擎主要由三个部分组成：rules、metadta providers、planner engine。**虚线**表示可能与外部框架有交互，与Calcite交互有两种方式：
 - 第一种：Calcite包含查询解析器和校验器，可以将SQL查询翻译为一颗语法树。由于Calcite不包含存储层，因此calcite通过adapter在外部存储引擎中定义表和视图。
 - 第二种：Calcite不但可优化SQL，还可以优化外部系统已有的语言解析和解释。
@@ -83,7 +83,7 @@ Calcite有一些常见的特征，如排序、分组和分区。与SCOPE优化�
 2. 图2中的SQL查询包含一个过滤器（where子句），该过滤器由适配器特定的规则推入splunk。
 
 一种可能实现是通过apache spark作为一个外部引擎：将join转为spark的实现，其输入的实现为jdbc-mysql和splunk。一种更加高效的实现是：利用Splunk可以通过ODBC对MySQL执行查找这一特点，planner规则通过`splunk-to-spark`转换器推行join操作，join操作现在处于`splunk-convention`中，在splunk引擎内部执行。
-![](../../img/calcite/查询优化流程.png)
+![](../img/calcite/查询优化流程.png)
 
 ## 5 ADAPTERS
 适配器（adapters）用于定义Calcite如何关联各种数据源以进行访问，图3说明了其组成部分。一般来讲，一个适配器包含一下以下几个部分：
@@ -92,7 +92,7 @@ Calcite有一些常见的特征，如排序、分组和分区。与SCOPE优化�
 - schema factory: 通过model的元数据信息产生schema
 Calcite在适配器中定义的表接口，以便在执行查询时读取数据，适配器可以向执行计划中添加规则。
 
-![](./../../img/calcite/adapter组成.png)
+![](../img/calcite/adapter组成.png)
 
 在第四章中我们说到，Calcite通过特征`calling convention`进行多源数据的查询操作。这些物理运算符实现了每个适配器中底层表的访问路径，当查询语句被解析为一个关系代数表达式之后，就会为这个连接下的每一个表都创建一个操作符，用于扫描表的数据，表扫描操作符是适配器必须实现的最小接口。当适配器实现了表扫描的操作符之后，Calcite的优化器就可以在客户端测的操作符中被调用：比如sorting、filtering、joins等对这些表执行任意SQL查询。
 
