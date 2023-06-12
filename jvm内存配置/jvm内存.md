@@ -147,7 +147,7 @@ Max Memory = eden + survivor + old + String Constant Pool + Code cache + compres
 
 ## 参考
 
-JVM源码分析之Metaspace解密 http://lovestblog.cn/blog/2016/10/29/metaspace/
-为什么设置-Xmx4g但是java进程内存占用达到8g？ https://developer.aliyun.com/article/1053272
-Java内存分区之什么是CCS区 https://blog.csdn.net/qq_27093465/article/details/106760961
-深入理解堆外内存 Metaspace https://www.javadoop.com/post/metaspace
+- JVM源码分析之Metaspace解密 http://lovestblog.cn/blog/2016/10/29/metaspace/
+- 为什么设置-Xmx4g但是java进程内存占用达到8g？ https://developer.aliyun.com/article/1053272
+- Java内存分区之什么是CCS区 https://blog.csdn.net/qq_27093465/article/details/106760961
+- 深入理解堆外内存 Metaspace https://www.javadoop.com/post/metaspace
