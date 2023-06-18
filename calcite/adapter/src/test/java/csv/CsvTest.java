@@ -31,13 +31,14 @@ public class CsvTest {
         CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
         SchemaPlus rootSchema = calciteConnection.getRootSchema();
         Map<String, Object> map = new HashMap<>();
-        map.put("directory", "D:\\project\\-\\calcite\\adapter\\src\\test\\resources\\sales");
+        String resourcePath = CsvTest.class.getClassLoader().getResource("sales").getPath();
+        map.put("directory", resourcePath);
 
         CsvSchema schema = (CsvSchema) new CsvSchemaFactory().create(rootSchema, "sales", map);
         rootSchema.add("sales", schema);
 
         Statement statement = calciteConnection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from EMPS");
+        ResultSet resultSet = statement.executeQuery("select * from sales.EMPS where NAME = 'Fred'");
         ResultSetMetaData metaData = resultSet.getMetaData();
 
         int columnCount = metaData.getColumnCount();
