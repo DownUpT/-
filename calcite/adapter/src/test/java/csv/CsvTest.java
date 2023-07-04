@@ -34,8 +34,8 @@ public class CsvTest {
 
     @Test
     public void testSelect() throws SQLException {
-//        query("select * from sales.DEPTS");
-        query("select t1.GENDER from (select * from sales.DEPTS) as t1");
+        query("select * from sales.DEPTS");
+//        query("select t1.GENDER from (select * from sales.DEPTS) as t1");
     }
 
     private void query(String sql) throws SQLException {
