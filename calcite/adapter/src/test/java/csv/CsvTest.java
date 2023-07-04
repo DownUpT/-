@@ -8,6 +8,7 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.junit.jupiter.api.Test;
 
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -21,13 +22,30 @@ import java.util.Properties;
 public class CsvTest {
 
     @Test
+    public void testSelectWhere() throws SQLException {
+        query("select GENDER from sales.EMPS where NAME = 'Fred'");
+    }
+
+    @Test
+    public void testName() {
+        String decode = URLDecoder.decode("https://paas.bkpaasdev2.com/o/cw_uac_saas/alarm/api/active/list/?query={%22status%22:[%22received%22,%22dispatched%22,%22abnormal%22,%22pending_execute%22,%22executing%22,%22autoorder_executing%22,%22autoexecute_executing%22,%22autoexecuting_failure%22]}");
+        System.out.println(decode);
+    }
+
+    @Test
     public void testSelect() throws SQLException {
+//        query("select * from sales.DEPTS");
+        query("select t1.GENDER from (select * from sales.DEPTS) as t1");
+    }
+
+    private void query(String sql) throws SQLException {
         Properties info = new Properties();
         info.setProperty("caseSensitive", "false");
         info.setProperty("conformance", SqlConformanceEnum.MYSQL_5.toString());
         info.setProperty("lex", Lex.MYSQL.toString());
 
         Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
+//        Connection connection = DriverManager.getConnection("jdbc:avatica:remote:", info);
         CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
         SchemaPlus rootSchema = calciteConnection.getRootSchema();
         Map<String, Object> map = new HashMap<>();
@@ -38,7 +56,7 @@ public class CsvTest {
         rootSchema.add("sales", schema);
 
         Statement statement = calciteConnection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from sales.EMPS where NAME = 'Fred'");
+        ResultSet resultSet = statement.executeQuery(sql);
         ResultSetMetaData metaData = resultSet.getMetaData();
 
         int columnCount = metaData.getColumnCount();
@@ -57,6 +75,25 @@ public class CsvTest {
         resultSet.close();
         statement.close();
         connection.close();
+    }
 
+    @Test
+    public void testStatic() {
+        B.getMessage();
+    }
+}
+class A {
+    protected static Map<String, String> AC;
+    public A() {
+        System.out.println("A 初始化了");
+    }
+}
+
+class B extends A {
+    static {
+        AC.put("as", "c");
+    }
+    public static void getMessage() {
+        System.out.println("A");
     }
 }

@@ -145,6 +145,9 @@ Max Memory = eden + survivor + old + String Constant Pool + Code cache + compres
 -XX:MaxDirectMemorySize=128m
 ```
 
+jinfo -flag ThreadStackSize 1
+-XX:ThreadStackSize=1024 这个代表每个线程占用的内存大小，单位kb
+
 ## 参考
 
 - JVM源码分析之Metaspace解密 http://lovestblog.cn/blog/2016/10/29/metaspace/

@@ -148,7 +148,7 @@ public class CsvSchema implements Schema {
             Source sourceSansCsv = sourceSansGz.trimOrNull(".csv");
             if (sourceSansCsv != null) {
                 // 这里直接创建Scannable的
-                final Table table = new CsvScannableTable(source, null);
+                final Table table = new CsvTranslatableTable(source, null);
                 builder.put(sourceSansCsv.relative(baseSource).path(), table);
             }
         }

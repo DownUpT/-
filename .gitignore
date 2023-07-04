@@ -1,5 +1,5 @@
 .project
-nio/arget/
+nio/target/
 logs
 .classpath
 .idea
@@ -17,3 +17,6 @@ dependency-reduced-pom.xml
 */*/dependency-reduced-pom.xml
 *.iml
 .DS_Store
+calcite/adapter/target
+nio/.idea
+.vscode
