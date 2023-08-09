@@ -17,10 +17,10 @@ public class KafkaClient {
     public static void main(String[] args) {
         Properties properties = new Properties();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.241.130.152:9092");
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "LOG_GROUP_d7b4855573b04f4989e7e52ab22b161b");
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "test_data_off");
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties, new StringDeserializer(), new StringDeserializer())) {
-            consumer.subscribe(Collections.singleton("BONREE_ONE_CONTROLLER_ZABBIX_METRIC_TOPIC_2"));
+            consumer.subscribe(Collections.singleton("locust_perf"));
             int size = 0;
             while (true) {
                 ConsumerRecords<String, String> poll = consumer.poll(Duration.of(2, ChronoUnit.SECONDS));
