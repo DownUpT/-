@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.8.18'
+}
+
+group = 'com.dq.collector'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    maven {
+        allowInsecureProtocol = true
+        url 'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'com.google.protobuf:protobuf-java:3.19.6'
+    implementation 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+    // https://mvnrepository.com/artifact/io.grpc/grpc-stub
+    implementation 'io.grpc:grpc-stub:1.57.1'
+    // https://mvnrepository.com/artifact/io.grpc/grpc-protobuf
+    implementation 'io.grpc:grpc-protobuf:1.57.1'
+
+    protobuf files("src/proto/")
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.17.3'
+    }
+
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.4.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
