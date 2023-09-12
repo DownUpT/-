@@ -1,9 +1,11 @@
 package com.dq.kafka;
 
+import com.dq.stream.KafkaProducerUtil;
 import com.dq.util.JacksonUtils;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.kafka.clients.producer.KafkaProducer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +91,7 @@ public class MetricDemo {
         String point = ".";
         int secondIndex = RANDOM.nextInt(3);
         int thirdIndex = RANDOM.nextInt(3);
-        return FIRST_ + point + SECOND_.get(secondIndex) + point + THIRD_.get(thirdIndex);
+        return FIRST + point + SECOND_.get(secondIndex) + point + THIRD_.get(thirdIndex);
     }
 
     public static Map<String, String> createMap() {
@@ -109,16 +111,20 @@ public class MetricDemo {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        for (int i = 0; i < 100; i++) {
-            System.out.println(JacksonUtils.obj2JsonString(randomMetric()));
-            TimeUnit.MILLISECONDS.sleep(10);
+        KafkaProducer<String, String> producer = KafkaProducerUtil
+                .getProducer("10.241.3.201:9093");
+        for (int i = 0; i < 10000; i++) {
+            producer.send(KafkaProducerUtil.createRecord("test_cluster3",
+                    JacksonUtils.obj2JsonString(randomMetric())));
+            TimeUnit.SECONDS.sleep(1);
         }
+        producer.close();
     }
 
-    public static final String FIRST_ = "system";
-    public static final List<String> SECOND_ = Lists.newArrayList("cpu", "memory", "disk");
-    public static final List<String> THIRD_ = Lists.newArrayList("used", "free", "total");
-    public static final List<String> GROUP_LIST = Lists.newArrayList(
+    private static final String FIRST = "system";
+    private static final List<String> SECOND_ = Lists.newArrayList("cpu", "memory", "disk");
+    private static final List<String> THIRD_ = Lists.newArrayList("used", "free", "total");
+    private static final List<String> GROUP_LIST = Lists.newArrayList(
             "中台能力重心",
             "APM",
             "DEM",
@@ -126,7 +132,7 @@ public class MetricDemo {
             "ONE",
             "BIGDATA");
 
-    public static final List<String> PERSON_IN_CHARGE = Lists.newArrayList(
+    private static final List<String> PERSON_IN_CHARGE = Lists.newArrayList(
             "Mr.L",
             "Ms.W",
             "Mr.Zg",
@@ -135,7 +141,7 @@ public class MetricDemo {
             "Ms.A",
             "Ms.B");
 
-    public static final List<String> METRIC_TYPE = Lists.newArrayList(
+    private static final List<String> METRIC_TYPE = Lists.newArrayList(
             "unknown",
             "gauge",
             "counter",

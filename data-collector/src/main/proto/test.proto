@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.dq.collector.change";
+
+message ChangeField {
+  repeated KeyValue keyValues = 1;
+}
+
+message KeyValue {
+  string key = 1;
+  string value = 2;
+}

@@ -59,7 +59,7 @@ Sql解析为SqlNode是由Calcite的javacc完成解析的，此处不做javacc语
 
 校验执行的实际在Sql的Parpare阶段，在calcite中，由CalcitePrepare中的prepareSql方法负责，其实现为：
 ```java
-
+  <T> CalciteSignature<T> prepareSql(Context context, Query<T> query, Type elementType, long maxRowCount);
 ```
 
 ```java
@@ -67,5 +67,81 @@ Sql解析为SqlNode是由Calcite的javacc完成解析的，此处不做javacc语
       query = validator().validate(query);
     }
 ```
+RelOptCluster：
+Apache Calcite中的 RelOptCluster 类是用于表示关系表达式的集群，它在查询优化过程中扮演重要角色。它作为一个容器，用于存储和管理各种关系表达式，并提供执行优化和转换的上下文。 
+ 
+ RelOptCluster 类的主要职责包括： 
+1. 维护集群中的关系表达式及其相互依赖关系。 
+2. 提供有关集群的元数据和统计信息。 
+3. 管理优化规则，并将其应用于集群中的关系表达式。 
+4. 跟踪关系表达式的成本和基数估计。 
+5. 基于优化规则，进行关系表达式的转换和重写。 
+ 
+总而言之，在Apache Calcite中， RelOptCluster 类通过管理关系表达式、应用优化规则以及提供优化上下文，对查询优化过程起着关键作用。
 
+RelOptPlanner
+执行优化器
 
+RexBuilder
+`row expressions`工厂，生成RexNode
+
+SqlToRelConverter
+将一个SQLnode解析树转换为关系代数表达式（RelNode）
+
+optimize优化查询逻辑代码
+```java
+  /**
+   * Optimizes a query plan.
+   *
+   * @param root Root of relational expression tree
+   * @param materializations Tables known to be populated with a given query
+   * @param lattices Lattices
+   * @return an equivalent optimized relational expression
+   */
+ protected RelRoot optimize(RelRoot root,
+      final List<Materialization> materializations,
+      final List<CalciteSchema.LatticeEntry> lattices) {
+    
+    // 获取执行优化器
+    final RelOptPlanner planner = root.rel.getCluster().getPlanner();
+
+    final DataContext dataContext = context.getDataContext();
+    planner.setExecutor(new RexExecutorImpl(dataContext));
+
+    final List<RelOptMaterialization> materializationList =
+        new ArrayList<>(materializations.size());
+    for (Materialization materialization : materializations) {
+      List<String> qualifiedTableName = materialization.materializedTable.path();
+      materializationList.add(
+          new RelOptMaterialization(
+              castNonNull(materialization.tableRel),
+              castNonNull(materialization.queryRel),
+              materialization.starRelOptTable,
+              qualifiedTableName));
+    }
+    // 获取RootTrait集合
+    final List<RelOptLattice> latticeList = new ArrayList<>(lattices.size());
+    for (CalciteSchema.LatticeEntry lattice : lattices) {
+      final CalciteSchema.TableEntry starTable = lattice.getStarTable();
+      final JavaTypeFactory typeFactory = context.getTypeFactory();
+      final RelOptTableImpl starRelOptTable =
+          RelOptTableImpl.create(catalogReader,
+              starTable.getTable().getRowType(typeFactory), starTable, null);
+      latticeList.add(
+          new RelOptLattice(lattice.getLattice(), starRelOptTable));
+    }
+
+    final RelTraitSet desiredTraits = getDesiredRootTraitSet(root);
+
+    final Program program = getProgram();
+    final RelNode rootRel4 =
+        program.run(planner, root.rel, desiredTraits, materializationList,
+            latticeList);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Plan after physical tweaks:\n{}",
+          RelOptUtil.toString(rootRel4, SqlExplainLevel.ALL_ATTRIBUTES));
+    }
+
+    return root.withRel(rootRel4);
+  }
+```
