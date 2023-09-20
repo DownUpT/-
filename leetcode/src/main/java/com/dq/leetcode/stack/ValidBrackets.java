@@ -1,5 +1,7 @@
 package com.dq.leetcode.stack;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -48,6 +50,26 @@ public class ValidBrackets {
                 if (s.charAt(i) == rightC && pop != leftC) {
                     return false;
                 }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public static boolean isValid2(String s) {
+        Stack<Character> stack = new Stack<>();
+        Map<Character, Character> pairs = new HashMap<Character, Character>() {{
+            put(')', '(');
+            put(']', '[');
+            put('}', '{');
+        }};
+        for (int i = 0; i < s.length(); i++) {
+            char key = s.charAt(i);
+            if (pairs.containsKey(key)) {
+                if (stack.isEmpty() || stack.pop() != pairs.get(key)) {
+                    return false;
+                }
+            } else {
+                stack.push(key);
             }
         }
         return stack.isEmpty();
